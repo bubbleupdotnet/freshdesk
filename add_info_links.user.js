@@ -6,6 +6,7 @@
 // @author       Joe
 // @match        https://bubbleupllc.freshdesk.com/*
 // @grant        none
+// @downloadURL  https://github.com/bubbleupdotnet/freshdesk/raw/main/add_info_links.user.js
 // ==/UserScript==
 
 (function() {
