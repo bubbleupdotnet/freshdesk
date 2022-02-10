@@ -41,7 +41,7 @@
 		if(wpUrl !== '') {
 			let wordpressUserSearchUrl = 'https://' + wpUrl + '/wp-admin/admin.php?page=pmpro-memberslist&s=' + encodeURIComponent(
 				contactEmail);
-			let wordpressUserLinkText = 'Wordpress User ' + csGroup;
+			let wordpressUserLinkText = 'WP User ' + csGroup;
 			createNewElAddParams(moreInfoFDLinkElement, wordpressUserSearchUrl, wordpressUserLinkText);
 
 			let wordpressActiveSubSearchUrl = 'https://' + wpUrl + '/wp-admin/edit.php?post_status=wc-active&post_type=shop_subscription&s=' + encodeURIComponent(
