@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FreshDesk Add Info Links
 // @namespace    https://www.bubbleup.net/
-// @version      0.3
+// @version      0.4
 // @description  Adds links in FreshDesk tickets to search customer/user/orders in Shopify and Connect based on the email address in the ticket.
 // @author       Joe
 // @match        https://bubbleupllc.freshdesk.com/*
@@ -10,54 +10,79 @@
 // ==/UserScript==
 
 (function() {
-    'use strict';
+	'use strict';
 
-    let checkForElementLoaded = setInterval(function() {
-        let checkedElement = document.querySelector('div[data-test-id="requester-info-contact-email"] .info-details-content');
-        if(checkedElement === undefined) {
-            //console.log('not loaded');
-        } else {
-            clearInterval(checkForElementLoaded);
-            setTimeout(runBelowFunction, 5000);
-        }
-    }, 1000);
+	let checkForElementLoaded = setInterval(function() {
+		let checkedElement = document.querySelector('div[data-test-id="requester-info-contact-email"] .info-details-content');
+		if(checkedElement === undefined) {
+			//console.log('not loaded');
+		} else {
+			clearInterval(checkForElementLoaded);
+			setTimeout(initFunction, 5000);
+		}
+	}, 1000);
 
-    function runBelowFunction() {
-        let groupName = document.querySelector('.group-field span.ember-power-select-selected-item').innerText;
-        if(groupName.includes('Denise Austin')){
-            
-            let contactEmail = document.querySelector('div[data-test-id="requester-info-contact-email"] .info-details-content').innerText
-            let moreInfoFDLinkElement = document.querySelector('.info-details-widget .contacts__view_more_info a[data-test-id="view-more-info"]');
-            let connectViewUserElement = moreInfoFDLinkElement.cloneNode(true);
-            let shopifyViewOrdersElement = moreInfoFDLinkElement.cloneNode(true);
-            let shopifyViewCustomerElement = moreInfoFDLinkElement.cloneNode(true);
+	function initFunction() {
+		let groupName = document.querySelector('.group-field span.ember-power-select-selected-item').innerText;
+		if(groupName.includes('Denise Austin')) {
+			let contactEmail = document.querySelector('div[data-test-id="requester-info-contact-email"] .info-details-content').innerText
+			let moreInfoFDLinkElement = document.querySelector('.info-details-widget .contacts__view_more_info a[data-test-id="view-more-info"]');
 
-            connectViewUserElement.href = 'https://www.deniseaustin.com/connect/en/user/index?UserSearch%5Bemail%5D=' + contactEmail;
-            connectViewUserElement.childNodes[3].nodeValue = 'Connect User (Denise Austin)';
-            connectViewUserElement.style.display = 'block';
-            connectViewUserElement.style.fontSize = '13px';
-            connectViewUserElement.style.marginTop = '10px';
+			let csGroup = '(Denise Austin)';
+			let connectUrl = 'www.deniseaustin.com';
+			let myShopifyUrl = 'hlb-denise-austin.myshopify.com';
+			let wpUrl = 'web.deniseaustin.com';
 
-            shopifyViewOrdersElement.href = 'https://hlb-denise-austin.myshopify.com/admin/orders?query=' + contactEmail;
-            shopifyViewOrdersElement.childNodes[3].nodeValue = 'Shopify Order (Denise Austin)';
-            shopifyViewOrdersElement.style.display = 'block';
-            shopifyViewOrdersElement.style.fontSize = '13px';
-            shopifyViewOrdersElement.style.marginTop = '10px';
+			formatParams(contactEmail, moreInfoFDLinkElement, csGroup, connectUrl, myShopifyUrl, wpUrl);
+		}
+	}
 
+	function formatParams(contactEmail, moreInfoFDLinkElement, csGroup, connectUrl, myShopifyUrl, wpUrl){
+		if(wpUrl !== '') {
+			let wordpressUserSearchUrl = 'https://' + wpUrl + '/wp-admin/admin.php?page=pmpro-memberslist&s=' + encodeURIComponent(
+				contactEmail);
+			let wordpressUserLinkText = 'Wordpress User ' + csGroup;
+			createNewElAddParams(moreInfoFDLinkElement, wordpressUserSearchUrl, wordpressUserLinkText);
 
-            shopifyViewCustomerElement.href = 'https://hlb-denise-austin.myshopify.com/admin/customers?query=' + contactEmail;
-            shopifyViewCustomerElement.childNodes[3].nodeValue = 'Shopify Customer (Denise Austin)';
-            shopifyViewCustomerElement.style.display = 'block';
-            shopifyViewCustomerElement.style.fontSize = '13px';
-            shopifyViewCustomerElement.style.marginTop = '10px';
+			let wordpressActiveSubSearchUrl = 'https://' + wpUrl + '/wp-admin/edit.php?post_status=wc-active&post_type=shop_subscription&s=' + encodeURIComponent(
+				contactEmail);
+			let wordpressActiveSubLinkText = 'WP Active Sub ' + csGroup;
+			createNewElAddParams(moreInfoFDLinkElement, wordpressActiveSubSearchUrl, wordpressActiveSubLinkText);
 
-            insertAfter(connectViewUserElement,moreInfoFDLinkElement);
-            insertAfter(shopifyViewOrdersElement,moreInfoFDLinkElement);
-            insertAfter(shopifyViewCustomerElement,moreInfoFDLinkElement);
-        }
+			let wordpressCancelledSubSearchUrl = 'https://' + wpUrl + '/wp-admin/edit.php?post_status=wc-cancelled&post_type=shop_subscription&s=' + encodeURIComponent(
+				contactEmail);
+			let wordpressCancelledSubLinkText = 'WP Cancelled Sub ' + csGroup;
+			createNewElAddParams(moreInfoFDLinkElement, wordpressCancelledSubSearchUrl, wordpressCancelledSubLinkText);
+		}
+		if(myShopifyUrl !== '') {
+			let shopifyCustomerSearchUrl = 'https://' + myShopifyUrl + '/admin/customers?query=' + contactEmail;
+			let shopifyCustomerLinkText = 'Shopify Customer ' + csGroup;
+			createNewElAddParams(moreInfoFDLinkElement, shopifyCustomerSearchUrl, shopifyCustomerLinkText);
 
-        function insertAfter(newNode, existingNode) {
-            existingNode.parentNode.insertBefore(newNode, existingNode.nextSibling);
-        }
-    }
+			let shopifyOrderSearchUrl = 'https://' + myShopifyUrl + '/admin/orders?query=' + contactEmail;
+			let shopifyOrderLinkText = 'Shopify Order ' + csGroup;
+			createNewElAddParams(moreInfoFDLinkElement, shopifyOrderSearchUrl, shopifyOrderLinkText);
+		}
+		if(connectUrl !== '') {
+			let connectUserSearchUrl = 'https://' + connectUrl + '/connect/en/user/index?UserSearch%5Bemail%5D=' + contactEmail;
+			let connectUserLinkText = 'Connect User ' + csGroup;
+			createNewElAddParams(moreInfoFDLinkElement, connectUserSearchUrl, connectUserLinkText);
+		}
+	}
+
+	function createNewElAddParams(moreInfoFDLinkElement, searchUrl, linkText){
+		let newElement = moreInfoFDLinkElement.cloneNode(true);
+
+		newElement.href = searchUrl;
+		newElement.childNodes[3].nodeValue = linkText;
+		newElement.style.display = 'block';
+		newElement.style.fontSize = '13px';
+		newElement.style.marginTop = '10px';
+
+		insertAfter(newElement, moreInfoFDLinkElement)
+	}
+
+	function insertAfter(newNode, existingNode) {
+		existingNode.parentNode.insertBefore(newNode, existingNode.nextSibling);
+	}
 })();
