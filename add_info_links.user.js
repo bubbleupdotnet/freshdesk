@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FreshDesk Add Info Links
 // @namespace    https://www.bubbleup.net/
-// @version      0.4
+// @version      0.5
 // @description  Adds links in FreshDesk tickets to search customer/user/orders in Shopify and Connect based on the email address in the ticket.
 // @author       Joe
 // @match        https://bubbleupllc.freshdesk.com/*
@@ -39,20 +39,24 @@
 
 	function formatParams(contactEmail, moreInfoFDLinkElement, csGroup, connectUrl, myShopifyUrl, wpUrl){
 		if(wpUrl !== '') {
-			let wordpressUserSearchUrl = 'https://' + wpUrl + '/wp-admin/admin.php?page=pmpro-memberslist&s=' + encodeURIComponent(
+			let wpUserSearchUrl = 'https://' + wpUrl + '/wp-admin/admin.php?page=pmpro-memberslist&s=' + encodeURIComponent(
 				contactEmail);
-			let wordpressUserLinkText = 'WP User ' + csGroup;
-			createNewElAddParams(moreInfoFDLinkElement, wordpressUserSearchUrl, wordpressUserLinkText);
+			let wpUserLinkText = 'WP User ' + csGroup;
+			createNewElAddParams(moreInfoFDLinkElement, wpUserSearchUrl, wpUserLinkText);
 
-			let wordpressActiveSubSearchUrl = 'https://' + wpUrl + '/wp-admin/edit.php?post_status=wc-active&post_type=shop_subscription&s=' + encodeURIComponent(
+			let wpActiveSubSearchUrl = 'https://' + wpUrl + '/wp-admin/edit.php?post_status=wc-active&post_type=shop_subscription&s=' + encodeURIComponent(
 				contactEmail);
-			let wordpressActiveSubLinkText = 'WP Active Sub ' + csGroup;
-			createNewElAddParams(moreInfoFDLinkElement, wordpressActiveSubSearchUrl, wordpressActiveSubLinkText);
+			let wpActiveSubLinkText = 'WP Active Sub ' + csGroup;
+			createNewElAddParams(moreInfoFDLinkElement, wpActiveSubSearchUrl, wpActiveSubLinkText);
 
-			let wordpressCancelledSubSearchUrl = 'https://' + wpUrl + '/wp-admin/edit.php?post_status=wc-cancelled&post_type=shop_subscription&s=' + encodeURIComponent(
+			let wpCancelledSubSearchUrl = 'https://' + wpUrl + '/wp-admin/edit.php?post_status=wc-cancelled&post_type=shop_subscription&s=' + encodeURIComponent(
 				contactEmail);
-			let wordpressCancelledSubLinkText = 'WP Cancelled Sub ' + csGroup;
-			createNewElAddParams(moreInfoFDLinkElement, wordpressCancelledSubSearchUrl, wordpressCancelledSubLinkText);
+			let wpCancelledSubLinkText = 'WP Cancelled Sub ' + csGroup;
+			createNewElAddParams(moreInfoFDLinkElement, wpCancelledSubSearchUrl, wpCancelledSubLinkText);
+
+			let wpPendingSubCancelSearchUrl = 'https://' + wpUrl + '/wp-admin/edit.php?post_status=wc-pending-cancel&post_type=shop_subscription&s=' + encodeURIComponent(contactEmail);
+			let wpPendingSubCancelLinkText = 'WP Pending Cancel Sub ' + csGroup;
+			createNewElAddParams(moreInfoFDLinkElement, wpPendingSubCancelSearchUrl, wpPendingSubCancelLinkText);
 		}
 		if(myShopifyUrl !== '') {
 			let shopifyCustomerSearchUrl = 'https://' + myShopifyUrl + '/admin/customers?query=' + contactEmail;
