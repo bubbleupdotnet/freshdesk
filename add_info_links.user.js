@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FreshDesk Add Info Links
 // @namespace    https://www.bubbleup.net/
-// @version      0.5
+// @version      0.6
 // @description  Adds links in FreshDesk tickets to search customer/user/orders in Shopify and Connect based on the email address in the ticket.
 // @author       Joe
 // @match        https://bubbleupllc.freshdesk.com/*
@@ -39,38 +39,49 @@
 
 	function formatParams(contactEmail, moreInfoFDLinkElement, csGroup, connectUrl, myShopifyUrl, wpUrl){
 		if(wpUrl !== '') {
-			let wpUserSearchUrl = 'https://' + wpUrl + '/wp-admin/admin.php?page=pmpro-memberslist&s=' + encodeURIComponent(
-				contactEmail);
-			let wpUserLinkText = 'WP User ' + csGroup;
-			createNewElAddParams(moreInfoFDLinkElement, wpUserSearchUrl, wpUserLinkText);
+			let wpUser = {
+				searchUrl: 'https://' + wpUrl + '/wp-admin/admin.php?page=pmpro-memberslist&s=' + encodeURIComponent(contactEmail),
+				linkText: 'WP User ' + csGroup
+			}
+			createNewElAddParams(moreInfoFDLinkElement, wpUser.searchUrl, wpUser.linkText);
 
-			let wpActiveSubSearchUrl = 'https://' + wpUrl + '/wp-admin/edit.php?post_status=wc-active&post_type=shop_subscription&s=' + encodeURIComponent(
-				contactEmail);
-			let wpActiveSubLinkText = 'WP Active Sub ' + csGroup;
-			createNewElAddParams(moreInfoFDLinkElement, wpActiveSubSearchUrl, wpActiveSubLinkText);
+			let wpActiveSub = {
+				searchUrl: 'https://' + wpUrl + '/wp-admin/edit.php?post_status=wc-active&post_type=shop_subscription&s=' + encodeURIComponent(contactEmail),
+				linkText : 'WP Active Sub ' + csGroup
+			}
+			createNewElAddParams(moreInfoFDLinkElement, wpActiveSub.searchUrl, wpActiveSub.linkText);
 
-			let wpCancelledSubSearchUrl = 'https://' + wpUrl + '/wp-admin/edit.php?post_status=wc-cancelled&post_type=shop_subscription&s=' + encodeURIComponent(
-				contactEmail);
-			let wpCancelledSubLinkText = 'WP Cancelled Sub ' + csGroup;
-			createNewElAddParams(moreInfoFDLinkElement, wpCancelledSubSearchUrl, wpCancelledSubLinkText);
+			let wpCancelledSub = {
+				searchUrl: 'https://' + wpUrl + '/wp-admin/edit.php?post_status=wc-cancelled&post_type=shop_subscription&s=' + encodeURIComponent(contactEmail),
+				linkText : 'WP Active Sub ' + csGroup
+			}
+			createNewElAddParams(moreInfoFDLinkElement, wpCancelledSub.searchUrl, wpCancelledSub.linkText);
 
-			let wpPendingSubCancelSearchUrl = 'https://' + wpUrl + '/wp-admin/edit.php?post_status=wc-pending-cancel&post_type=shop_subscription&s=' + encodeURIComponent(contactEmail);
-			let wpPendingSubCancelLinkText = 'WP Pending Cancel Sub ' + csGroup;
-			createNewElAddParams(moreInfoFDLinkElement, wpPendingSubCancelSearchUrl, wpPendingSubCancelLinkText);
+			let wpPendingSubCancel = {
+				searchUrl: 'https://' + wpUrl + '/wp-admin/edit.php?post_status=wc-pending-cancel&post_type=shop_subscription&s=' + encodeURIComponent(contactEmail),
+				linkText : 'WP Pending Cancel Sub ' + csGroup
+			}
+			createNewElAddParams(moreInfoFDLinkElement, wpPendingSubCancel.searchUrl, wpPendingSubCancel.linkText);
 		}
 		if(myShopifyUrl !== '') {
-			let shopifyCustomerSearchUrl = 'https://' + myShopifyUrl + '/admin/customers?query=' + contactEmail;
-			let shopifyCustomerLinkText = 'Shopify Customer ' + csGroup;
-			createNewElAddParams(moreInfoFDLinkElement, shopifyCustomerSearchUrl, shopifyCustomerLinkText);
+			let shopifyCustomer = {
+				searchUrl: 'https://' + myShopifyUrl + '/admin/customers?query=' + contactEmail,
+				linkText : 'Shopify Customer ' + csGroup
+			}
+			createNewElAddParams(moreInfoFDLinkElement, shopifyCustomer.searchUrl, shopifyCustomer.linkText);
 
-			let shopifyOrderSearchUrl = 'https://' + myShopifyUrl + '/admin/orders?query=' + contactEmail;
-			let shopifyOrderLinkText = 'Shopify Order ' + csGroup;
-			createNewElAddParams(moreInfoFDLinkElement, shopifyOrderSearchUrl, shopifyOrderLinkText);
+			let shopifyOrder = {
+				searchUrl: 'https://' + myShopifyUrl + '/admin/orders?query=' + contactEmail,
+				linkText : 'Shopify Order ' + csGroup
+			}
+			createNewElAddParams(moreInfoFDLinkElement, shopifyOrder.searchUrl, shopifyOrder.linkText);
 		}
 		if(connectUrl !== '') {
-			let connectUserSearchUrl = 'https://' + connectUrl + '/connect/en/user/index?UserSearch%5Bemail%5D=' + contactEmail;
-			let connectUserLinkText = 'Connect User ' + csGroup;
-			createNewElAddParams(moreInfoFDLinkElement, connectUserSearchUrl, connectUserLinkText);
+			let connectUser = {
+				searchUrl: 'https://' + connectUrl + '/connect/en/user/index?UserSearch%5Bemail%5D=' + contactEmail,
+				linkText : 'Connect User ' + csGroup
+			}
+			createNewElAddParams(moreInfoFDLinkElement, connectUser.searchUrl, connectUser.linkText);
 		}
 	}
 
